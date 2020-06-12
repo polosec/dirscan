@@ -1,6 +1,4 @@
 # dirscan(from ctfscan)
-# optimized delay for ctf or bypass some waf
-# update key_word list in my way
 这是一款参考CTFWSCAN开发的扫描器
 对CTFWSCAN做了一些改进：
 ## 使用方法： python dirscan.py url
@@ -8,3 +6,4 @@
 ## 使用队列存储生成的字典item，解决了ctfwscan文件重复扫描的bug；
 ## 一切参数命令行可控，不需要再打开配置文件修改。
 ## TODO:批量扫描
+欢迎提交issues & pr！
