@@ -5,6 +5,7 @@
 # @File    : config.py
 # @Software: PyCharm
 key_words=['ctf']
-thread=1
+thread=10
 enable_log=True
 method=1
+delay=0

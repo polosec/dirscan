@@ -1,0 +1,13 @@
+[TIME] 			=> 2020-06-16 10:37:34.875910
+[METHOD] 		=> GET
+[TARGET] 		=> http://qfnu.edu.cn/
+[NUMBER_OF_THREAD] 	=> 10
+[KEY_WORDS] 		=> ['ctf']
+[DELAY] 		=> 0
+
+[200] => source.php.bak
+[200] => .source.php.bak
+[200] => user.php.bak
+[200] => %3f.bak
+[200] => index.php.bak
+[200] => mysql.bak

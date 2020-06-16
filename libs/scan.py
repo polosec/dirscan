@@ -5,16 +5,14 @@
 # @File    : scan.py
 # @Software: PyCharm
 import threading
-from config import *
-from libs.log import Log
 import user_agent
-import  requests
+import  time
 import queue
 threads=[]
 thread_max = threading.BoundedSemaphore(500)
 class Scan():
 
-    def __init__(self,url,log,files,req,delay):
+    def __init__(self,url,log,files,req,delay,thread):
         self.url=url
         self.log=log
         self.len,self.req=req
@@ -22,6 +20,8 @@ class Scan():
         self.delay=delay
         self.queue=queue.Queue()
         self.num=0#测试输出
+        self.thread=thread
+        self.thread_max=threading.BoundedSemaphore(self.thread)
     def realscan(self):
        while not self.queue.empty():
            try:
@@ -32,18 +32,18 @@ class Scan():
                }
                response=self.req(url=url,headers=headers)
                self.display(response,filename )
-               thread_max.release()
+               self.thread_max.release()
            except:
                pass
 
     def run(self):
         for file in self.files:
                 self.queue.put(file)
-                thread_max.acquire()
+                self.thread_max.acquire()
                 t=threading.Thread(target=self.realscan)
+                time.sleep(self.delay)
                 threads.append(t)
                 t.start()
-
         for t in threads:
             t.join()
     def display(self,r,file):
@@ -53,12 +53,10 @@ class Scan():
                 self.log[file]=r.status_code
             else:
                 print('{}:[{}]=>{}{}'.format(self.num,r.status_code,file,'\t'*5))
-                self.log[file] = r.status_code
         else:
             if len(r.text)!=self.len:
                 print('{}:[{}]=>{}{}'.format(self.num,r.status_code, file, '\t' * 5))
                 self.log[file] = r.status_code
             else:
-                print('{}:[{}] => {}{}'.format(self.num,r.status_code, file, '\t' * 5), end='\r')
-                self.log[file] = r.status_code
+                print('第{}次扫描:[{}] => {}{}'.format(self.num,r.status_code, file, '\t' * 5), end='\r')
         self.num+=1

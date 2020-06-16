@@ -6,7 +6,6 @@
 # @Software: PyCharm\
 from config import *
 import  requests
-import time
 from libs.scan import  Scan
 from libs.log import Log
 class Init():
@@ -14,9 +13,15 @@ class Init():
         self.url=self.init_url(str(args.url))
         self.keywords=args.keywords
         self.delay=args.delay
+        self.method=args.method
+        if args.thread!="":
+
+            self.thread=int(args.thread)
+        else:
+            self.thread=thread
     def help(self):
-            help = 'Useage : python ctf-wscan.py [website url]\n'
-            help += 'Example: python ctf-wscan.py http://ctf.test.com'
+            help = 'Useage : python ctf-wscan.py url [-k means keywordlist] [-t means thread num] [-m means method 0=head 1=get] [-d means delay]\n'
+            help += 'Example: python ctf-wscan.py http://ctf.test.com   -k keyword1,keyword2 -t 10 -m 1 -d 0.5'
             print(help)
             exit()
     def init_url(self,url):
@@ -29,11 +34,11 @@ class Init():
         loglist={}
         files=self.getfiles()
         req=self.detect()
-        scan=Scan(self.url,loglist,files,req,self.delay)
+        scan=Scan(self.url,loglist,files,req,self.delay,self.thread)
         scan.run()
         if enable_log:
             log=Log(self.url,loglist)
-            log.save()
+            log.save(self.method,self.delay,self.thread)
     def getfiles(self):
         with open('dict/dict.txt') as f:
             files=f.readlines()
@@ -48,16 +53,20 @@ class Init():
         rand1=''.join(random.sample(string.ascii_letters,8))
         rand2=uuid.uuid4()
         rand3=random.randint(10000,9999999)
+        req=requests.get
         r1=requests.get(self.url+str(rand1))
         r2 = requests.get(self.url + str(rand2))
         r3 = requests.get(self.url + str(rand3))
+        code = int(self.method) if self.method != "" else int(method)
+
         if r1.status_code==r2.status_code==r3.status_code ==200 and len(r1.text)==len(r2.text)==len(r3.text):
+            code=3
             req=requests.get
             return  len(r1.text),req #代表的是404页面的长度
         else:
-            if method==1:
+            if code==1:
                 req=requests.head
-            elif method==2:
+            elif code==2:
                 req=requests.get
             return -1,req
 class GenerateDict():
